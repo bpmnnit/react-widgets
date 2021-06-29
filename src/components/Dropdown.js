@@ -5,15 +5,21 @@ const Dropdown = ({ options, selected, onSelectedChange }) => {
   const ref = useRef();
   
   useEffect(() => {
-    document.body.addEventListener('click', (event) => {
+    const onBodyClick = (event) => {
       if(ref.current.contains(event.target)) {
         return;
       }
       setOpen(false);
       // Remember manual js event listeners are called first
       // And, then all the event listeners we create in react are called
-    }, { capture: true });
-  },[]);
+    };
+
+    document.body.addEventListener('click', onBodyClick, { capture: true });
+
+    return () => { // This cleanup function will  be invoked when we want to remove the Dropdown component from the DOM.
+      document.body.removeEventListener('click', onBodyClick, { capture: true });
+    };
+  }, []);
 
   const renderedOptions = options.map((option) => {
     if(option.value === selected.value) {
